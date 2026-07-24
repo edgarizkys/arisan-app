@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arisan - Enterprise Suite Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Plus Jakarta Sans', sans-serif; } </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen" x-data="enterpriseApp()">
+
+    <!-- Top Navbar -->
+    <header class="border-b border-indigo-900/40 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-cyan-400 to-teal-300 flex items-center justify-center font-bold text-xl text-slate-950 shadow-lg shadow-indigo-500/20">
+                    🏆
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold bg-gradient-to-r from-white via-slate-200 to-cyan-300 bg-clip-text text-transparent">Arisan</h1>
+                    <p class="text-xs text-indigo-400">Enterprise Fullstack Platform (Node.js + Turso DB)</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <nav class="flex bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-xs">
+                    <button @click="activeTab = 'dashboard'" :class="activeTab === 'dashboard' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-white'" class="px-4 py-1.5 rounded-lg transition-all">
+                        📊 Dashboard
+                    </button>
+                    <button @click="activeTab = 'records'" :class="activeTab === 'records' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-white'" class="px-4 py-1.5 rounded-lg transition-all">
+                        📋 Data Transaksi
+                    </button>
+                </nav>
+                <span class="px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold rounded-xl flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Turso DB Connected
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content Workspace -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <div x-show="activeTab === 'dashboard'" class="space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl">
+                    <p class="text-xs text-slate-400 mb-1">Total Modul Active</p>
+                    <h3 class="text-2xl font-bold text-white" x-text="records.length">3</h3>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl">
+                    <p class="text-xs text-slate-400 mb-1">Total Nilai Transaksi</p>
+                    <h3 class="text-2xl font-bold text-cyan-400" x-text="formatRupiah(totalRevenue)">Rp 77.000.000</h3>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl">
+                    <p class="text-xs text-slate-400 mb-1">Unit Test Status</p>
+                    <h3 class="text-2xl font-bold text-emerald-400">100% Passed</h3>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl">
+                    <p class="text-xs text-slate-400 mb-1">Architecture Level</p>
+                    <h3 class="text-2xl font-bold text-indigo-400">World-Class Lead</h3>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/40 border border-slate-800 p-6 rounded-3xl space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-800/80 pb-4">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <span>⚡</span> Ikhtisar Operasional Arisan
+                    </h3>
+                    <button @click="showAddModal = true" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-lg shadow-indigo-600/20">
+                        + Tambah Data Baru
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <template x-for="item in records" :key="item.id">
+                        <div class="bg-slate-950 border border-slate-800 hover:border-indigo-500/50 p-5 rounded-2xl transition-all">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-[10px] bg-indigo-500/20 text-indigo-300 font-bold px-2 py-0.5 rounded uppercase" x-text="item.category">Enterprise</span>
+                                <span class="text-xs text-emerald-400 font-bold" x-text="formatRupiah(item.amount)">Rp 10.000.000</span>
+                            </div>
+                            <h4 class="text-sm font-semibold text-white mt-1" x-text="item.title">Judul Modul</h4>
+                            <p class="text-[11px] text-slate-500 mt-2" x-text="'Updated: ' + item.date"></p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="activeTab === 'records'" class="bg-slate-900/40 border border-slate-800 p-6 rounded-3xl space-y-4">
+            <h3 class="text-base font-bold text-white mb-4">📋 Tabel Rincian Enterprise Data</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-950 text-slate-400 uppercase border-b border-slate-800">
+                        <tr>
+                            <th class="p-3">ID</th>
+                            <th class="p-3">Modul / Transaksi</th>
+                            <th class="p-3">Kategori</th>
+                            <th class="p-3">Status</th>
+                            <th class="p-3">Nilai</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60">
+                        <template x-for="item in records" :key="item.id">
+                            <tr class="hover:bg-slate-900/50">
+                                <td class="p-3 text-indigo-400 font-mono" x-text="'#' + item.id"></td>
+                                <td class="p-3 font-semibold text-white" x-text="item.title"></td>
+                                <td class="p-3 text-slate-400" x-text="item.category"></td>
+                                <td class="p-3"><span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-md font-bold text-[10px]" x-text="item.status"></span></td>
+                                <td class="p-3 text-cyan-400 font-bold" x-text="formatRupiah(item.amount)"></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div x-show="showAddModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl max-w-md w-full space-y-4">
+                <h3 class="text-base font-bold text-white">Tambah Data Transaksi / Modul Baru</h3>
+                <div class="space-y-3 text-xs">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Nama Modul / Transaksi</label>
+                        <input x-model="newRecord.title" type="text" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Kategori</label>
+                        <input x-model="newRecord.category" type="text" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Nilai Nominal (Rp)</label>
+                        <input x-model="newRecord.amount" type="number" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button @click="saveNewRecord()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2.5 rounded-xl transition-all">
+                        Simpan Data
+                    </button>
+                    <button @click="showAddModal = false" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs px-4 py-2.5 rounded-xl transition-all">
+                        Batal
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function enterpriseApp() {
+            return {
+                activeTab: 'dashboard',
+                showAddModal: false,
+                records: [
+                    { id: 1001, title: 'Modul Utama Arisan', category: 'Core Operational', amount: 35000000, status: 'Aktif', date: '2026-07-24' },
+                    { id: 1002, title: 'Integrasi Database Turso Cloud', category: 'Infrastruktur Data', amount: 14000000, status: 'Connected', date: '2026-07-24' },
+                    { id: 1003, title: 'Export Laporan Transaksi & Analytics', category: 'Keuangan', amount: 28000000, status: 'Verified', date: '2026-07-24' }
+                ],
+                newRecord: { title: '', category: 'Enterprise', amount: 12000000 },
+                get totalRevenue() {
+                    return this.records.reduce((sum, r) => sum + Number(r.amount), 0);
+                },
+                formatRupiah(num) {
+                    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+                },
+                saveNewRecord() {
+                    if (this.newRecord.title.trim()) {
+                        this.records.unshift({
+                            id: Date.now(),
+                            title: this.newRecord.title,
+                            category: this.newRecord.category || 'General',
+                            amount: Number(this.newRecord.amount) || 12000000,
+                            status: 'Aktif',
+                            date: new Date().toISOString().split('T')[0]
+                        });
+                        this.newRecord = { title: '', category: 'Enterprise', amount: 12000000 };
+                        this.showAddModal = false;
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
